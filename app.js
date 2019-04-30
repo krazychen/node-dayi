@@ -1,13 +1,15 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -18,6 +20,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  ////这里的name值得是cookie的name，默认cookie的name是：connect.sid
+  name: 'nodebss',
+  secret: 'node_bss_secret',
+  cookie: ('name', 'value', {path: '/', httpOnly: true, secure: false, maxAge: 600000}),
+  store: new FileStore(),
+  //重新保存：强制会话保存即使是未修改的。默认为true但是得写上
+  resave: true,
+  //强制“未初始化”的会话保存到存储。
+  saveUninitialized: true,
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

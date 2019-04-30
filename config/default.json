@@ -1,0 +1,14 @@
+{
+  "my_dbConfig_master": {
+    "host": "localhost",
+    "user": "root",
+    "password": "4444444",
+    "database": "nodedayi"
+  },
+  "my_dbConfig_slave": {
+    "host": "localhost",
+    "user": "root",
+    "password": "4444444",
+    "database": "nodedayi"
+  }
+}
