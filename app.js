@@ -6,8 +6,11 @@ const logger = require('morgan');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 
+/* 功能性菜单跳转请求路由 */
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+
+/* 用户服务后台服务器请求路由 */
+const serverUsersRouter = require('./server/users');
 
 const app = express();
 
@@ -34,6 +37,7 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/server/users',serverUsersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

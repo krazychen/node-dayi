@@ -10,7 +10,6 @@ router.get('/', function (req, res, next) {
   res.render('index', data);
 });
 
-
 /* 页面跳转 - 登录跳转 */
 router.get('/login', function (req, res, next) {
   let data = {
@@ -20,6 +19,7 @@ router.get('/login', function (req, res, next) {
   res.render('user/login', data);
 });
 
+/* 页面跳转 - 注册跳转 */
 router.get('/reg', function (req, res, next) {
   let data = {
     title: 'NodeBBS',

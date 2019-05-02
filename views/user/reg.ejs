@@ -4,9 +4,6 @@
 <head>
     <meta charset="utf-8">
     <title>注册</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="keywords" content="fly,layui,前端社区">
-    <meta name="description" content="Fly社区是模块化前端UI框架Layui的官网社区，致力于为web开发提供强劲动力">
     <% include ../common/link.ejs %>
 </head>
 <body>
@@ -27,31 +24,31 @@
                             <div class="layui-form-item">
                                 <label for="L_email" class="layui-form-label">邮箱</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" id="L_email" name="email" required lay-verify="email" autocomplete="off" class="layui-input">
+                                    <input type="text" id="email" name="email" required lay-verify="email" autocomplete="off" class="layui-input">
                                 </div>
                                 <div class="layui-form-mid layui-word-aux">将会成为您唯一的登入名</div>
                             </div>
                             <div class="layui-form-item">
                                 <label for="L_username" class="layui-form-label">昵称</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" id="L_username" name="username" required lay-verify="required" autocomplete="off" class="layui-input">
+                                    <input type="text" id="username" name="username" required lay-verify="required" autocomplete="off" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label for="L_pass" class="layui-form-label">密码</label>
                                 <div class="layui-input-inline">
-                                    <input type="password" id="L_pass" name="pass" required lay-verify="required" autocomplete="off" class="layui-input">
+                                    <input type="password" id="pass" name="pass" required lay-verify="required" autocomplete="off" class="layui-input">
                                 </div>
                                 <div class="layui-form-mid layui-word-aux">6到16个字符</div>
                             </div>
                             <div class="layui-form-item">
                                 <label for="L_repass" class="layui-form-label">确认密码</label>
                                 <div class="layui-input-inline">
-                                    <input type="password" id="L_repass" name="repass" required lay-verify="required" autocomplete="off" class="layui-input">
+                                    <input type="password" id="repass" name="repass" required lay-verify="required" autocomplete="off" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <button class="layui-btn" lay-filter="*" lay-submit>立即注册</button>
+                                <button class="layui-btn" id="submit" lay-filter="*" lay-submit>立即注册</button>
                             </div>
                         </form>
                     </div>
@@ -62,7 +59,46 @@
 
 </div>
 
-<% include ../common/footer.ejs %>
-
+    <% include ../common/footer.ejs %>
+    <script type="text/javascript" src="/javascripts/md5.js"></script>
+    <script>
+        $('#submit').click(function () {
+            let mail = $('#email').val();
+            let username = $('#username').val();
+            let password = $('#pass').val();
+            let repassword = $('#repass').val();
+            if(!mail){
+                layer.alert('请输入邮箱');
+                return ;
+            }
+            if(!username){
+                layer.alert('请输入昵称');
+                return ;
+            }
+            if (password !== repassword) {
+                layer.alert('两次密码不一致');
+            } else if (!password || password.length < 6) {
+                layer.alert('密码长度过短');
+            } else {
+                let data = {
+                    mail: mail,
+                    username: username,
+                    password: hex_md5(password)
+                };
+                $.post('/server/users/signup', data, function (res) {
+                    // console.log(res);
+                    if (res.status === 'success') {
+                        layer.alert('注册成功');
+                        window.location.href = '/login';
+                    } else {
+                        if (res.status === 'failed')
+                            $('#email').val('邮件地址重复');
+                        layer.alert('登陆失败');
+                    }
+                });
+            }
+            return false;
+        });
+    </script>
 </body>
 </html>
