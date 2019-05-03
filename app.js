@@ -36,7 +36,6 @@ app.use(session({
 }));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/server/users',serverUsersRouter);
 
 // catch 404 and forward to error handler

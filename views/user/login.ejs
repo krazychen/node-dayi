@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>登入</title>
-     <% include ../common/link.ejs %>
+    <% include ../common/link.ejs %>
 </head>
 <body>
     <% include ../common/header.ejs %>
@@ -65,7 +65,6 @@
                 mail: mail,
                 password: hex_md5(password)
             };
-            console.log(password);
             $.post('/server/users/signin', data, function (res) {
                 // console.log(res);
                 if (res.status === 'success') {

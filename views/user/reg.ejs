@@ -35,6 +35,15 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
+                                <label for="L_username" class="layui-form-label">角色</label>
+                                <div class="layui-input-inline">
+                                    <select id="roleType" name="roleType" lay-filter="roleType">
+                                        <option value="学生">学生</option>
+                                        <option value="老师">老师</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
                                 <label for="L_pass" class="layui-form-label">密码</label>
                                 <div class="layui-input-inline">
                                     <input type="password" id="pass" name="pass" required lay-verify="required" autocomplete="off" class="layui-input">
@@ -62,11 +71,17 @@
     <% include ../common/footer.ejs %>
     <script type="text/javascript" src="/javascripts/md5.js"></script>
     <script>
+        layui.use('form', function() {
+            var form = layui.form;
+
+            form.render('select');
+        });
         $('#submit').click(function () {
             let mail = $('#email').val();
             let username = $('#username').val();
             let password = $('#pass').val();
             let repassword = $('#repass').val();
+            let roleType = $('#roleType').find("option:selected").text();
             if(!mail){
                 layer.alert('请输入邮箱');
                 return ;
@@ -83,7 +98,8 @@
                 let data = {
                     mail: mail,
                     username: username,
-                    password: hex_md5(password)
+                    password: hex_md5(password),
+                    roleType: roleType
                 };
                 $.post('/server/users/signup', data, function (res) {
                     // console.log(res);
