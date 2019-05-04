@@ -11,6 +11,9 @@ const indexRouter = require('./routes/index');
 
 /* 用户服务后台服务器请求路由 */
 const serverUsersRouter = require('./server/users');
+/* 帖子服务后台服务器请求路由 */
+const serverTopicRouter = require('./server/topic');
+
 
 const app = express();
 
@@ -37,6 +40,7 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/server/users',serverUsersRouter);
+app.use('/server/topics',serverTopicRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
