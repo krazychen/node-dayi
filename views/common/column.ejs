@@ -1,17 +1,17 @@
 <div class="fly-panel fly-column">
     <div class="layui-container">
         <ul class="layui-clear">
-            <li class="layui-hide-xs layui-this"><a href="/">首页</a></li>
-            <li><a href="jie/index.html">提问</a></li>
-            <li><a href="jie/index.html">分享<span class="layui-badge-dot"></span></a></li>
-            <li><a href="jie/index.html">讨论</a></li>
-            <li><a href="jie/index.html">建议</a></li>
-            <li><a href="jie/index.html">公告</a></li>
-            <li><a href="jie/index.html">动态</a></li>
-            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
+            <li id="shouye" class="layui-hide-xs layui-this"><a href="/">首页</a></li>
+            <li id="tiwen"><a href="/server/topics/topics?class=提问&page=1&num=15">提问</a></li>
+            <li id="fenxiang"><a href="/server/topics/topics?class=分享&page=1&num=15">分享</a></li>
+            <li id="taolun"><a href="/server/topics/topics?class=讨论&page=1&num=15">讨论</a></li>
+            <li id="jianyi"><a href="/server/topics/topics?class=建议&page=1&num=15">建议</a></li>
+            <li id="gonggao"><a href="/server/topics/topics?class=公告&page=1&num=15">公告</a></li>
+            <li id="dongtai"><a href="/server/topics/topics?class=动态&page=1&num=15">动态</a></li>
 
             <!-- 用户登入后显示 -->
             <% if(session && session.username){ %>
+                <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li>
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html">我发表的贴</a></li>
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="user/index.html#collection">我收藏的贴</a></li>
             <% } %>
@@ -38,4 +38,35 @@ function addTopic(){
 
     <% } %>
 }
+
+const curtclass='<%= tclass %>';
+if(curtclass){
+    switch (curtclass) {
+        case "提问":
+            $("#shouye").removeClass("layui-hide-xs layui-this");
+            $("#tiwen").addClass("layui-hide-xs layui-this");
+            break;
+        case "分享":
+            $("#shouye").removeClass("layui-hide-xs layui-this");
+            $("#fenxiang").addClass("layui-hide-xs layui-this");
+            break;
+        case "讨论":
+            $("#shouye").removeClass("layui-hide-xs layui-this");
+            $("#taolun").addClass("layui-hide-xs layui-this");
+            break;
+        case "建议":
+            $("#shouye").removeClass("layui-hide-xs layui-this");
+            $("#jianyi").addClass("layui-hide-xs layui-this");
+            break;
+        case "公告":
+            $("#shouye").removeClass("layui-hide-xs layui-this");
+            $("#gonggao").addClass("layui-hide-xs layui-this");
+            break;
+        case "动态":
+            $("#shouye").removeClass("layui-hide-xs layui-this");
+            $("#dongtai").addClass("layui-hide-xs layui-this");
+            break;
+    }
+}
+
 </script>

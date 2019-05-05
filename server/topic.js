@@ -111,10 +111,8 @@ router.post('/tops',async (req, res) => {
 });
 
 
-router.get('/topics', function (req, res) {
+router.get('/topics',async (req, res) => {
 
-    let connection_read = dbhelper.con_read();
-    // 在这里添加代码
     let current_page = 0; //默认为1
     let num = 15; //每页条数
     if (req.query.page) {
@@ -124,50 +122,83 @@ router.get('/topics', function (req, res) {
         num = parseInt(req.query.limit);
     }
     let next_page = current_page + 1;
-    let sql = 'SELECT * FROM post natural join user ORDER BY lasttime DESC limit ' + num + ' offset ' + num * (current_page-1);
-    if(req.query.sort) {
-        sql = 'SELECT * FROM post natural join user ORDER BY reply DESC limit ' + num + ' offset ' + num * (current_page-1);
+    let tclass=req.query.class;
+    let status=req.query.status;
+    let sort=req.query.sort;
+
+    let sql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid where 1=1';
+    let countsql = 'SELECT count(*) FROM topic left JOIN user on topic.uid=user.uid where 1=1';
+    /* 热议sql*/
+    let onessql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid ORDER BY topic.visits desc,topic.lasttime desc limit 12';
+
+    switch (tclass) {
+        case "提问" :
+            sql += ' and topic.tclass ="提问"';
+            countsql += ' and topic.tclass ="提问"';
+            break;
+        case "分享" :
+            sql += ' and topic.tclass ="分享"';
+            countsql += ' and topic.tclass ="分享"';
+            break;
+        case "讨论" :
+            sql += ' and topic.tclass ="讨论"';
+            countsql += ' and topic.tclass ="讨论"';
+            break;
+        case "建议" :
+            sql += ' and topic.tclass ="建议"';
+            countsql += ' and topic.tclass ="建议"';
+            break;
+        case "公告" :
+            sql += ' and topic.tclass ="公告"';
+            countsql += ' and topic.tclass ="公告"';
+            break;
+        case "动态" :
+            sql += ' and topic.tclass ="动态"';
+            countsql += ' and topic.tclass ="动态"';
+            break;
     }
-    if(req.query.type) {
-        sql = 'SELECT * FROM post natural join user where post.type_id="'+req.query.type+'" ORDER BY lasttime DESC limit ' + num + ' offset ' + num * (current_page-1);
+    switch (status) {
+        case "未结":
+            sql += ' and topic.status="未结"';
+            countsql += ' and topic.status="未结"';
+            break;
+        case "已结":
+            sql += ' and topic.status="已结"';
+            countsql += ' and topic.status="已结"';
+            break;
+        case "精华":
+            sql += ' and topic.isselect =1';
+            countsql += ' and topic.isselect =1';
+            break;
     }
-    if(req.query.key){
-        sql = 'SELECT * FROM post natural join user where postname like "%'+req.query.key+'%" ORDER BY lasttime DESC limit ' + num + ' offset ' + num * (current_page-1);
+    switch (sort) {
+        case "按最新":
+            sql += ' order by topic.lasttime desc';
+            break;
+        case "按热议":
+            sql += ' order by topic.visits desc';
+            break;
     }
 
-    let topicTypeSql = 'select topic,type_id,count(topic) from post GROUP BY topic,type_id ORDER BY count(topic) desc limit 10';
+    sql +=' limit ' + num + ' offset ' + num * (current_page-1);
 
-    let countSql ='SELECT count(*) FROM post natural join user';
-    if(req.query.type){
-        countSql = 'SELECT count(*) FROM post natural join user where post.type_id="'+req.query.type+'"';
+    let topics = await dbhelper.query(sql);
+    let count = await dbhelper.query(countsql);
+    let ones = await dbhelper.query(onessql);
+    let data = {session:req.session};
+    data.total = count[0]['count(*)'];
+    data.pages = Math.floor(data.total/15)+1;
+    data.topics = topics;
+    data.ones = ones;
+    data.tclass = tclass;
+    data.tstatus = status;
+    data.sort = sort;
+    if (topics && topics.length > 0) {
+        data.status = 1;
+    } else {
+        data.status = 0;
     }
-
-    let data = {};
-    connection_read.query(sql, function (err, val) {
-        // connection_read.end();
-        if (err)
-            throw err;
-        if (val && val.length > 0) {
-            data.data = val;
-            data.status = 'success';
-        } else {
-            data.status = 'failed';
-        }
-        connection_read.query(topicTypeSql, function (err, topicTypes) {
-            data.topicTypes=topicTypes;
-
-            connection_read.query(countSql, function (err, counts) {
-                connection_read.end();
-                // console.log(counts)
-                data.total = counts[0]['count(*)'];
-                data.pages = Math.floor(data.total/15)+1;
-                // console.log(data.pages);
-                res.json(data);
-            });
-            // res.json(data);
-        });
-
-    })
+    res.render("jie/index",data);
 });
 
 

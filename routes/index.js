@@ -41,7 +41,10 @@ router.get('/',async (req, res) => {
         selects:selects,
         ones:ones,
         replys:replys,
-        topics:topics
+        topics:topics,
+        tclass:'',
+        tstatus:'',
+        sort:''
     };
     console.log(data)
     res.render('index', data);

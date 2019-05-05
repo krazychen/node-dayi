@@ -1,17 +1,17 @@
 <div class="fly-panel" style="margin-bottom: 0;">
 
     <div class="fly-panel-title fly-filter">
-        <a href="" class="layui-this">综合</a>
+        <a id="zhonghe" href="/server/topics/topics?class=<%= tclass %>&status=&sort=<%= sort %>&page=1&num=15" class="layui-this">综合</a>
         <span class="fly-mid"></span>
-        <a href="">未结</a>
+        <a id="weijie" href="/server/topics/topics?class=<%= tclass %>&status=未结&sort=<%= sort %>&page=1&num=15">未结</a>
         <span class="fly-mid"></span>
-        <a href="">已结</a>
+        <a id="yijie" href="/server/topics/topics?class=<%= tclass %>&status=已结&sort=<%= sort %>&page=1&num=15">已结</a>
         <span class="fly-mid"></span>
-        <a href="">精华</a>
+        <a id="jinghua" href="/server/topics/topics?class=<%= tclass %>&status=精华&sort=<%= sort %>&page=1&num=15">精华</a>
         <span class="fly-filter-right layui-hide-xs">
-            <a href="" class="layui-this">按最新</a>
+            <a id="anzuixin" href="/server/topics/topics?class=<%= tclass %>&status=<%= tstatus %>&sort=按最新&page=1&num=15" class="layui-this">按最新</a>
             <span class="fly-mid"></span>
-            <a href="">按热议</a>
+            <a id="anreyi" href="/server/topics/topics?class=<%= tclass %>&status=<%= tstatus %>&sort=按热议&page=1&num=15">按热议</a>
           </span>
     </div>
 
@@ -75,3 +75,44 @@
 
 
 </div>
+<script>
+
+    const status='<%= tstatus %>';
+    if(status){
+        switch (status) {
+            case "未结":
+                $("#zhonghe").removeClass("layui-this");
+                $("#weijie").addClass("layui-this");
+                break;
+            case "已结":
+                $("#zhonghe").removeClass("layui-this");
+                $("#yijie").addClass("layui-this");
+                break;
+            case "精华":
+                $("#zhonghe").removeClass("layui-this");
+                $("#jinghua").addClass("layui-this");
+                break;
+            default:
+                $("#zhonghe").addClass("layui-this");
+                $("#weijie").removeClass("layui-this");
+                $("#yijie").removeClass("layui-this");
+                $("#jinghua").removeClass("layui-this");
+                break;
+        }
+    }
+
+    const sort='<%= sort %>';
+    if(sort){
+        switch (sort) {
+            case "按最新":
+                $("#anzuixin").removeClass("layui-this");
+                $("#anreyi").addClass("layui-this");
+                break;
+            case "按热议":
+                $("#anzuixin").removeClass("layui-this");
+                $("#anreyi").addClass("layui-this");
+                break;
+        }
+    }
+
+</script>

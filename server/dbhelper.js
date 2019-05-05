@@ -25,7 +25,7 @@ let query = function( sql, values ) {
                 reject( err )
             } else {
                 connection.query(sql, values, ( err, rows) => {
-                    console.log(rows);
+                    // console.log(rows);
                     if ( err ) {
                         reject( err )
                     } else {
