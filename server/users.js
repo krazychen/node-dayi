@@ -53,6 +53,8 @@ router.post('/signin', function (req, res, next) {
             sess.sex = data[0].sex;
             sess.city = data[0].city;
             sess.role_type = data[0].role_type;
+            sess.experience = data[0].experience;
+            sess.checkintime = data[0].checkintime;
             if(data[0].pic.indexOf("public")!=-1){
                 sess.pic=data[0].pic.substring(data[0].pic.indexOf("public")+"public".length,data[0].pic.length);
             }else{
@@ -87,21 +89,13 @@ router.get('/home', function (req, res, next) {
     let user_id = req.session.uid;
     let connection_read = dbhelper.con_read();
     let sql = 'SELECT uid, postname, publishtime, pid, pcontent, visits, reply from post where uid= ' + user_id + ' order by publishtime desc limit 10';
-    let query = 'select answer.uid, answer.content, answer.pid, post.postname, answer.atime from answer join post on post.pid = answer.pid where answer.uid= ' + user_id + ' order by atime desc limit 10';
     let data = {};
     connection_read.query(sql, function (err, data1) {
         if (err)
             throw err;
         data.session = req.session;
         data.data1 = data1;
-        connection_read.query(query, function (err, data2) {
-            if (err)
-                throw err;
-            connection_read.end();
-            data.data2 = data2;
-            data.session = req.session;
-            res.render('user/home', data);
-        });
+        res.render('user/home', data);
     });
 });
 
@@ -131,18 +125,19 @@ router.post('/profile', function (req, res, next) {
                 status: 1
             };
             if (data.length > 0) {
-                sess.views = 1;
+                sses.views = 1;
                 sess.username = data[0].username;
                 sess.mail = data[0].mail;
-                sess.country = data[0].country;
                 sess.utime = data[0].utime;
                 sess.sign = data[0].sign;
                 sess.sex = data[0].sex;
-                sess.province = data[0].province;
                 sess.city = data[0].city;
-                if (data[0].pic.indexOf("public") != -1) {
-                    sess.pic = data[0].pic.substring(data[0].pic.indexOf("public") + "public".length, data[0].pic.length);
-                } else {
+                sess.role_type = data[0].role_type;
+                sess.experience = data[0].experience;
+                sess.checkintime = data[0].checkintime;
+                if(data[0].pic.indexOf("public")!=-1){
+                    sess.pic=data[0].pic.substring(data[0].pic.indexOf("public")+"public".length,data[0].pic.length);
+                }else{
                     sess.pic = data[0].pic;
                 }
                 sess.uid = data[0].uid;
@@ -234,6 +229,59 @@ router.post('/changpassw', function (req, res, next) {
         }
         status.session=sess;
         res.send(status);
+    });
+})
+
+/* 签到 */
+router.post('/checkin', function (req, res, next) {
+    console.log('11');
+    let user_id = req.session.uid;
+    let sess = req.session;
+    let connection_write = dbhelper.con_write();
+    let connection_read = dbhelper.con_read();
+    let sql = 'UPDATE user SET '
+        + 'experience=experience+5 ,checkintime=now() where uid="' + user_id + '" ';
+    console.log(sql)
+    let insertSql = 'insert into user_exp_record (uid,exp_type,exp_opt,exp_num) '+
+        ' values("'+user_id+'","增加","签到",5)';
+
+    let sqlUser = 'SELECT * FROM user where uid = "' + user_id + '" ';
+    let data = {};
+
+    connection_write.query(sql, function (err, val) {
+        if (err) throw err;
+        connection_write.query(insertSql, function (err, insertdata) {
+            if (err) throw err;
+            connection_read.query(sqlUser, function (err, sqldata) {
+                connection_write.end();
+                connection_read.end();
+                if (err)
+                    throw err;
+                data.status= 1
+                if (sqldata.length > 0) {
+                    sess.views = 1;
+                    sess.username = sqldata[0].username;
+                    sess.mail = sqldata[0].mail;
+                    sess.country = sqldata[0].country;
+                    sess.utime = sqldata[0].utime;
+                    sess.sign = sqldata[0].sign;
+                    sess.sex = sqldata[0].sex;
+                    sess.province = sqldata[0].province;
+                    sess.city = sqldata[0].city;
+                    if (sqldata[0].pic.indexOf("public") != -1) {
+                        sess.pic = sqldata[0].pic.substring(sqldata[0].pic.indexOf("public") + "public".length, sqldata[0].pic.length);
+                    } else {
+                        sess.pic = sqldata[0].pic;
+                    }
+                    sess.uid = sqldata[0].uid;
+                    sess.publishtime = sqldata[0].publishtime || 0;
+                } else {
+                    data.status = 0;
+                }
+                data.session = sess;
+                res.send(data);
+            });
+        });
     });
 })
 

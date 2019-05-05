@@ -61,7 +61,13 @@
                 </div>
                 <div class="detail-about">
                     <a class="fly-avatar" href="../user/home.html">
-                        <img src="<%= session.pic %>" alt="<%= session.username %>">
+                        <%
+                        let pic = data.pic;
+                        if(data.pic.indexOf("public") != -1){
+                            pic=data.pic.substring(data.pic.indexOf("public") + "public".length, data.pic.length)
+                        }
+                        %>
+                        <img src="<%= pic %>" alt="<%= data.username %>">
                     </a>
                     <div class="fly-detail-user">
                         <a href="../user/home.html" class="fly-link">
@@ -83,7 +89,7 @@
                         <span><%= date_value1 %></span>
                     </div>
                     <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
-                        <span style="padding-right: 10px; color: #FF7200">悬赏：<%= data.experience %>积分</span>
+                        <span style="padding-right: 10px; color: #FF7200">悬赏：<%= data.texperience %>积分</span>
                         <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="add.html">编辑此贴</a></span>
                     </div>
                 </div>

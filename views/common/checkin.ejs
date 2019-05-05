@@ -1,0 +1,51 @@
+<div class="fly-panel fly-signin">
+    <div class="fly-panel-title">
+        签到
+        <!--<i class="fly-mid"></i>-->
+        <!--<a href="javascript:;" class="fly-link" id="LAY_signinHelp">说明</a>-->
+        <!--<i class="fly-mid"></i>-->
+        <!--<a href="javascript:;" class="fly-link" id="LAY_signinTop">活跃榜<span class="layui-badge-dot"></span></a>-->
+        <!--<span class="fly-signin-days">已连续签到<cite>16</cite>天</span>-->
+    </div>
+    <div id="uncheckin" class="fly-panel-main fly-signin-main">
+        <button onclick="checkin()" class="layui-btn layui-btn-danger" id="LAY_signin">今日签到</button>
+        <span>可获得<cite>5</cite>积分</span>
+    </div>
+    <!-- 已签到状态 -->
+    <div id="alcheckin" class="fly-panel-main fly-signin-main" style="display:none">
+        <button class="layui-btn layui-btn-disabled">今日已签到</button>
+        <span>获得了<cite>5</cite>积分</span>
+    </div>
+</div>
+<script>
+    function checkin(){
+        const loginin='<%= session.username %>';
+        if(!loginin){
+            layer.alert('请先登录!');
+            return;
+        }
+        let data = {
+        };
+        $.post('/server/users/checkin', data, function (res) {
+            if (res.status === 1) {
+                $("#uncheckin").attr("style","display:none;");
+                $("#alcheckin").attr("style","display:block;");
+                layer.alert('签到成功');
+            } else {
+                layer.alert('签到失败');
+            }
+        });
+    }
+
+    const checkintime='<%= session.checkintime %>';
+    if(checkintime){
+        const diff = new Date(new Date() - new Date(checkintime));
+        const year = diff.getUTCFullYear()-1970
+        const month = diff.getUTCMonth()
+        const day = diff.getUTCDate()-1;
+        if(day==0){
+            $("#uncheckin").attr("style","display:none;");
+            $("#alcheckin").attr("style","display:block;");
+        }
+    }
+</script>

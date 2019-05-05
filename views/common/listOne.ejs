@@ -1,49 +1,13 @@
 
 <dl class="fly-panel fly-list-one">
     <dt class="fly-panel-title">本周热议</dt>
+    <% if(ones) ones.forEach(function (item, index) { %>
     <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
+        <a href="/server/topics/topic/<%= item.tid %>"><%= item.title %></a>
+        <span><i class="iconfont icon-pinglun1"></i> <%= item.visits %></span>
     </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-    <dd>
-        <a href="jie/detail.html">基于 layui 的极简社区页面模版</a>
-        <span><i class="iconfont icon-pinglun1"></i> 16</span>
-    </dd>
-
-    <!-- 无数据时 -->
-    <!--
-    <div class="fly-none">没有相关数据</div>
-    -->
+    <% }) %>
+    <% if(ones.length==0) { %>
+        <div class="fly-none" style="min-height:20px;">没有相关数据</div>
+    <% } %>
 </dl>
