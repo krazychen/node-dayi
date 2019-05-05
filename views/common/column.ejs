@@ -18,7 +18,8 @@
         </ul>
 
         <div class="fly-column-right layui-hide-xs">
-            <span class="fly-search"><i class="layui-icon"></i></span>
+            <span class="fly-search"><i id="search" name="search" class="layui-icon"></i></span>
+            <a href="/" id="searchlink" class="layui-this" type="hidden"></a>
             <a href="#" onclick="addTopic()" class="layui-btn">发表新帖</a>
         </div>
     </div>
@@ -68,5 +69,61 @@ if(curtclass){
             break;
     }
 }
+
+
+$("#search").on("click",function(){
+    layer.open({
+        type: 1
+        ,title: false
+        ,closeBtn: false
+        ,shadeClose: true
+        ,maxWidth: 10000
+        ,skin: 'fly-layer-search'
+        ,content: ['<form id="searchForm" action="">'
+            ,'<input autocomplete="off" placeholder="搜索内容，回车跳转" type="text" name="key">'
+            ,'<a id="searcheLink" style="display:none"></a>'
+            ,'</form>'].join('')
+        ,success: function(layero){
+            var input = layero.find('input');
+            input.focus();
+            //layero.find('form').submit(function(){
+
+             //   var _form = $(layero).find('form')
+             //   _form.action ="/server/topics/topics?class=<%= tclass %>&status=<%= tstatus %>&sort=<%= sort %>&page=1&num=15";
+                // var val = input.val();
+                // if(val.replace(/\s/g, '') === ''){
+                //     return false;
+                // }
+                // input.val(encodeURI(val));
+
+                // input.val('site:/api/topics?key= '+ input.val());
+                // $("#searchlink").attr("href","/?key=hot");
+                // console.log($("#searchlink").attr("href"))
+                // $("#searchlink").click();
+            //});
+            this.enterConfirm = function(event){
+                if(event.keyCode === 13){
+                    var val = input.val();
+                    if(val.replace(/\s/g, '') === ''){
+                        return false;
+                    }
+                    input.val(encodeURI(val));
+                    //let searcheLink = $(layero).find('searcheLink');
+                    //searcheLink.href="/server/topics/topics?class=<%= tclass %>&status=<%= tstatus %>&sort=<%= sort %>&page=1&num=15&key="+input.val();
+                    //console.log(searcheLink.href);
+                    //searcheLink.click();
+                    window.location.href="/server/topics/topics?class=<%= tclass %>&status=<%= tstatus %>&sort=<%= sort %>&page=1&num=15&key="+input.val();
+                    return false; //阻止系统默认回车事件
+                }
+            };
+            $(document).on('keydown', this.enterConfirm); //监听键盘事件
+
+        }
+        , function(index, layero) {
+            //按钮【按钮一】的回调
+            alert();
+        }
+    })
+})
 
 </script>

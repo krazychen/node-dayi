@@ -44,9 +44,10 @@ router.get('/',async (req, res) => {
         topics:topics,
         tclass:'',
         tstatus:'',
-        sort:''
+        sort:'',
+        page:1,
+        pages:2
     };
-    console.log(data)
     res.render('index', data);
 });
 

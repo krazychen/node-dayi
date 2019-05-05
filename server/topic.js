@@ -49,16 +49,25 @@ router.get('/topic/:topic_id',async (req, res) => {
     let sql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid where tid = "' + tid + '"';
     let answerSql = 'SELECT * FROM answer NATURAL JOIN user where pid = "' + tid + '"';
     let visitUpSql = 'update topic set visits=visits+1 where tid = "' + tid + '"';
+    /* 回帖周榜sql - 获取的是用户*/
+    let replyssql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid ORDER BY topic.replys desc,topic.lasttime DESC limit 10';
 
     let data = {session:sess};
 
     const topics = await dbhelper.query(sql);
+    const answers = await dbhelper.query(answerSql);
+    const visitUps = await dbhelper.query(visitUpSql);
+    const replys = await dbhelper.query(replyssql);
+
+    data.data = topics[0];
+    data.answer = answers;
+    data.replys = replys;
+    data.tclass = '';
+    data.tstatus = '';
+    data.sort = '';
+
     if(topics && topics.length > 0){
-        data.data = topics[0];
         data.status=1;
-        const answers = await dbhelper.query(answerSql);
-        const visitUps = await dbhelper.query(visitUpSql);
-        data.reply = answers;
     }else{
         data.status=0;
     }
@@ -113,7 +122,7 @@ router.post('/tops',async (req, res) => {
 
 router.get('/topics',async (req, res) => {
 
-    let current_page = 0; //默认为1
+    let current_page = 1; //默认为1
     let num = 15; //每页条数
     if (req.query.page) {
         current_page = parseInt(req.query.page);
@@ -125,6 +134,7 @@ router.get('/topics',async (req, res) => {
     let tclass=req.query.class;
     let status=req.query.status;
     let sort=req.query.sort;
+    let key=req.query.key;
 
     let sql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid where 1=1';
     let countsql = 'SELECT count(*) FROM topic left JOIN user on topic.uid=user.uid where 1=1';
@@ -171,6 +181,11 @@ router.get('/topics',async (req, res) => {
             countsql += ' and topic.isselect =1';
             break;
     }
+
+    if(key){
+        sql += ' and topic.tcontent like "%'+key+'%"';
+        countsql += ' and topic.tcontent like "%'+key+'%"';
+    }
     switch (sort) {
         case "按最新":
             sql += ' order by topic.lasttime desc';
@@ -180,7 +195,9 @@ router.get('/topics',async (req, res) => {
             break;
     }
 
-    sql +=' limit ' + num + ' offset ' + num * (current_page-1);
+    // sql +=' limit ' + num + ' offset ' + num * (current_page-1);
+    /* 加载所有不进行分页，因此limit一直都是最大 */
+    sql +=' limit ' + num * (current_page);
 
     let topics = await dbhelper.query(sql);
     let count = await dbhelper.query(countsql);
@@ -193,6 +210,7 @@ router.get('/topics',async (req, res) => {
     data.tclass = tclass;
     data.tstatus = status;
     data.sort = sort;
+    data.page = current_page;
     if (topics && topics.length > 0) {
         data.status = 1;
     } else {
