@@ -84,21 +84,6 @@ router.get('/set', function (req, res, next) {
 });
 
 
-/* 用户主页路由 */
-router.get('/home', function (req, res, next) {
-    let user_id = req.session.uid;
-    let connection_read = dbhelper.con_read();
-    let sql = 'SELECT uid, postname, publishtime, pid, pcontent, visits, reply from post where uid= ' + user_id + ' order by publishtime desc limit 10';
-    let data = {};
-    connection_read.query(sql, function (err, data1) {
-        if (err)
-            throw err;
-        data.session = req.session;
-        data.data1 = data1;
-        res.render('user/home', data);
-    });
-});
-
 /* 修改用户资料 */
 router.post('/profile', function (req, res, next) {
 
@@ -283,6 +268,36 @@ router.post('/checkin', function (req, res, next) {
             });
         });
     });
-})
+});
+
+/* 用户主页路由 */
+router.get('/home',async (req, res) => {
+
+    let uid=req.query.uid?req.query.uid:req.session.uid;
+
+    /* 个人信息sql*/
+    let usersql = 'SELECT * FROM user where uid="'+uid+'"';
+    /* 个人提问sql*/
+    let topicsql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid where topic.uid="'+uid+'" ORDER BY topic.lasttime DESC limit 10';
+    /* 回答sql*/
+    let answersql = 'SELECT * FROM answer left join topic on answer.tid=topic.tid left join user on answer.uid=answer.uid where answer.uid ="'+uid+'" ORDER BY answer.atime desc limit 10';
+
+    const user = await dbhelper.query(usersql);
+    const topics = await dbhelper.query(topicsql);
+    const answers = await dbhelper.query(answersql);
+
+    let data = {
+        session: req.session,
+        usert: user[0],
+        answers:answers,
+        topics:topics,
+        tclass:'',
+        tstatus:'',
+        sort:'',
+        page:1,
+        pages:2
+    };
+    res.render('user/home', data);
+});
 
 module.exports = router;

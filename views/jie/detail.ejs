@@ -63,7 +63,7 @@
                     </span>
                 </div>
                 <div class="detail-about">
-                    <a class="fly-avatar" href="../user/home.html">
+                    <a class="fly-avatar" href="/server/users/home?uid=<%=data.uid %>">
                         <%
                         let pic = data.pic;
                         if(data.pic.indexOf("public") != -1){
@@ -73,7 +73,7 @@
                         <img src="<%= pic %>" alt="<%= data.username %>">
                     </a>
                     <div class="fly-detail-user">
-                        <a href="../user/home.html" class="fly-link">
+                        <a href="/server/users/home?uid=<%=data.uid %>" class="fly-link">
                             <cite><%= data.username %></cite>
                             <% if(session && session.role_type=='老师'){ %>
                                 <i class="iconfont icon-renzheng layui-hide-xs" title="老师"></i>

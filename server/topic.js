@@ -7,7 +7,7 @@ router.post('/add', function (req, res, next) {
     let connection_read = dbhelper.con_read();
     let sess = req.session;
     let sql =
-        " INSERT INTO topic (title,publishtime,lasttime,uid,tclass, tcontent,experience,status )" +
+        " INSERT INTO topic (title,publishtime,lasttime,uid,tclass, tcontent,texperience,status )" +
         " VALUES('" + req.body.title + "', now(),now(),'"+ req.session.uid +
         " ','" + req.body.class + "','" +req.body.content+
         " ','" + req.body.experience + "','未结')";

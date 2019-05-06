@@ -3,7 +3,7 @@
     <dl>
         <% if(replys) replys.forEach(function (item, index) { %>
         <dd>
-            <a href="user/home.html">
+            <a href="/server/users/home?uid=<%=item.uid %>">
                 <%
                     let pic = item.pic;
                     if(item.pic.indexOf("public") != -1){

@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户主页</title>
+    <% include ../common/link.ejs %>
+</head>
+<body style="margin-top: 65px;">
+
+<% include ../common/header.ejs %>
+
+<div class="fly-home fly-panel" style="background-image: url();">
+
+    <%
+    let pic = usert.pic;
+    if(usert.pic.indexOf("public") != -1){
+        pic=usert.pic.substring(usert.pic.indexOf("public") + "public".length, usert.pic.length)
+    }
+    %>
+    <img src="<%= pic %>" alt="<%= usert.username %>">
+    <h1>
+        <a href="#" link>
+        <%= usert.username %>
+        <% if(usert.role_type=='老师'){ %>
+            <i style="top:-3px;left:5px;" class="iconfont icon-renzheng layui-hide-xs" title="老师"></i>
+            <% } %></a>
+    </h1>
+
+    </br>
+    <p class="fly-home-info">
+        <i class="iconfont icon-kiss" title="积分"></i><span style="color: #FF7200;"><%=usert.experience %> 积分</span>
+        <%
+        function p(s) {
+            return s < 10 ? '0' + s: s;//时间补零
+        }
+        let date = new Date(usert.utime);
+        let date_value1 = '未知'
+        if(date) {
+            date_value1=date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        }
+        %>
+        <i class="iconfont icon-shijian"></i><span><%= date_value1 %> 加入</span>
+        <i class="iconfont icon-chengshi"></i><span>来自<%= usert.city %></span>
+    </p>
+
+    <p class="fly-home-sign"><%= usert.sign %></p>
+
+</div>
+
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6 fly-home-jie">
+            <div class="fly-panel">
+                <h3 class="fly-panel-title"><%=usert.username %> 最近的提问</h3>
+                <ul class="jie-row">
+                    <% if(topics) topics.forEach(function (item, index) { %>
+                    <li>
+                        <% if(item.isselect==1){ %>
+                        <span class="fly-jing">精</span>
+                        <% } %>
+                        <a href="/server/topics/topic/<%= item.tid %>" class="jie-title"> <%= item.title %></a>
+                        <%
+                            let publishtime=item.publishtime;
+                            let diffday=0;
+                            let diffhour=0;
+                            if(publishtime){
+                                let diff = new Date(new Date() - new Date(publishtime));
+                                diffday = diff.getUTCDate()-1;
+                                diffhour = diff.getUTCHours();
+                            }
+                        %>
+                        <% if(diffday==0){ %>
+                            <i><%= diffhour %>小时前</i>
+                        <% }else{ %>
+                            <i><%= diffday %>天前</i>
+                        <% } %>
+
+                        <em class="layui-hide-xs"><%= item.visits %>阅/<%= item.replys %>答</em>
+                    </li>
+                    <% }) %>
+                    <% if(topics.length==0) { %>
+                    <div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><i style="font-size:14px;">没有发表任何求解</i></div>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+
+        <div class="layui-col-md6 fly-home-da">
+            <div class="fly-panel">
+                <h3 class="fly-panel-title"><%=usert.username %> 最近的回答</h3>
+                <ul class="home-jieda">
+                    <% if(answers) answers.forEach(function (item, index) { %>
+                    <li>
+                        <p>
+                            <%
+                                let atime=item.atime;
+                                let diffday=0;
+                                let diffhour=0;
+                                if(atime){
+                                    let diff = new Date(new Date() - new Date(atime));
+                                    diffday = diff.getUTCDate()-1;
+                                    diffhour = diff.getUTCHours();
+                                }
+                            %>
+                            <% if(diffday==0){ %>
+                                <span><%= diffhour %>小时前</span>
+                            <% }else{ %>
+                                <span><%= diffday %>天前</span>
+                            <% } %>
+                            在<a href="" target="_blank"><%= item.title %>?</a>中回答：
+                        </p>
+                        <div class="home-dacontent">
+                            <%=item.content %>
+                        </div>
+                    </li>
+                    <% }) %>
+                    <% if(answers.length==0) { %>
+                        <div class="fly-none" style="min-height: 50px; padding:30px 0; height:auto;"><span>没有回答任何问题</span></div>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% include ../common/footer.ejs %>
+
+</body>
+</html>

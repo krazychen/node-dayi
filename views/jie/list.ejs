@@ -18,7 +18,7 @@
     <ul class="fly-list">
         <% if(topics) topics.forEach(function (item, index) { %>
         <li>
-            <a href="user/home.html" class="fly-avatar">
+            <a href="/server/users/home?uid=<%=item.uid %>" class="fly-avatar">
                 <%
                     let pic = item.pic;
                     if(item.pic.indexOf("public") != -1){
@@ -32,7 +32,7 @@
                 <a href="/server/topics/topic/<%= item.tid %>"><%= item.title %></a>
             </h2>
             <div class="fly-list-info">
-                <a href="user/home.html" link>
+                <a href="/server/users/home?uid=<%=item.uid %>" link>
                     <cite><%= item.username %></cite>
                     <% if(item.role_type=='老师'){ %>
                         <i class="iconfont icon-renzheng layui-hide-xs" title="老师"></i>
