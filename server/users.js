@@ -169,7 +169,7 @@ var upload = multer({
 router.post('/avatar', upload.single('file'), function (req, res, next) {
 
     var file = req.file;
-    let user_id = req.params.user_id;
+    let user_id = req.session.uid;
     let sess = req.session;
 
     const imgurl = file.path;
@@ -226,7 +226,6 @@ router.post('/checkin', function (req, res, next) {
     let connection_read = dbhelper.con_read();
     let sql = 'UPDATE user SET '
         + 'experience=experience+5 ,checkintime=now() where uid="' + user_id + '" ';
-    console.log(sql)
     let insertSql = 'insert into user_exp_record (uid,exp_type,exp_opt,exp_num) '+
         ' values("'+user_id+'","增加","签到",5)';
 
@@ -299,5 +298,6 @@ router.get('/home',async (req, res) => {
     };
     res.render('user/home', data);
 });
+
 
 module.exports = router;
