@@ -38,22 +38,22 @@
 
                     <div class="fly-admin-box" data-id="123">
                         <% if(data.uid==session.uid){ %>
-                        <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
+                        <span class="layui-btn layui-btn-xs jie-admin" type="del" onclick="deltopic('<%=data.tid %>')">删除</span>
                         <% } //只有创建者才能进行删除%>
 
                         <% if(session.role_type=='老师'){ %>
                             <% if(data.istop!=1){ %>
-                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1">置顶</span>
+                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1" onclick="settop('<%=data.tid %>','<%=data.istop %>','<%=session.uid%>')">置顶</span>
                             <% } //%>
                             <% if(data.istop==1){ %>
-                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span>
+                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;" onclick="settop('<%=data.tid %>','<%=data.istop %>','<%=session.uid%>')">取消置顶</span>
                             <% } //%>
 
                             <% if(data.isselect!=1){ %>
-                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="1">加精</span>
+                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="1" onclick="setselect('<%=data.tid %>','<%=data.isselect %>','<%=session.uid%>')">加精</span>
                             <% } //%>
                             <% if(data.isselect==1){ %>
-                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span>
+                            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;" onclick="setselect('<%=data.tid %>','<%=data.isselect %>','<%=session.uid%>')">取消加精</span>
                             <% } //%>
                         <% } //只有老师才能置顶和加精%>
                     </div>
@@ -93,9 +93,9 @@
                     </div>
                     <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
                         <span style="padding-right: 10px; color: #FF7200">悬赏：<%= data.texperience %>积分</span>
-                        <% if(data.uid==session.uid){ %>
-                        <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="add.html">编辑此贴</a></span>
-                        <% } //只有创建者才能进行编辑%>
+                        <!--<% if(data.uid==session.uid){ %>-->
+                        <!--<span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="add.html">编辑此贴</a></span>-->
+                        <!--<% } //只有创建者才能进行编辑%>-->
                     </div>
                 </div>
                 <div class="detail-body photos">
@@ -320,6 +320,66 @@
             }
             else
                 layer.alert('采纳失败');
+        });
+        return false;
+    }
+
+    function deltopic(tid){
+        let data = {
+            tid:tid
+        }
+        $.post('/server/topics/del', data, function (res) {
+            if (res.status === 1) {
+                window.location.href='/';
+            }
+            else
+                layer.alert('删除失败');
+        });
+        return false;
+    }
+
+    function settop(tid,istop,tuid){
+        let data = {
+            tid:tid,
+            istop:istop,
+            tuid:tuid
+        }
+        $.post('/server/topics/settop', data, function (res) {
+            if (res.status === 1) {
+                location.reload();
+            }
+            else{
+                if(istop==1){
+                    layer.alert('取消置顶失败');
+                }else{
+                    layer.alert('置顶失败');
+                }
+
+            }
+
+        });
+        return false;
+    }
+
+    function setselect(tid,isselect,tuid){
+        let data = {
+            tid:tid,
+            isselect:isselect,
+            tuid:tuid
+        }
+        $.post('/server/topics/setselect', data, function (res) {
+            if (res.status === 1) {
+                location.reload();
+            }
+            else{
+                if(iselect==1){
+                    layer.alert('取消加精失败');
+                }else{
+                    layer.alert('加精失败');
+                }
+
+            }
+
         });
         return false;
     }

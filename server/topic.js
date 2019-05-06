@@ -189,6 +189,85 @@ router.get('/topics',async (req, res) => {
     res.render("jie/index",data);
 });
 
+/* 删除帖子 */
+router.post('/del',async (req, res) => {
+
+    let tid = req.body.tid;
+
+    let sql = "delete from topic where tid= " +tid;
+    let sql2 = "delete from answer where tid= " +tid;
+
+    let data = {session:req.session};
+    const rows = await dbhelper.query(sql);
+
+    /* 如果没有正常删除帖子，则返回错误*/
+    if(rows.affectedRows!=1) {
+        data.status = 0;
+    }else{
+        /* 如果正常删除帖子，则更新帖子回复次数*/
+        const row2 = await dbhelper.query(sql2);
+        data.status = 1;
+    }
+    res.json(data);
+});
+
+/* 帖子置顶 */
+router.post('/settop',async (req, res) => {
+
+    let tid = req.body.tid;
+    let istop = req.body.istop;
+    let tuid = req.body.tuid;
+
+    let sql='';
+    //取消置顶
+    if(istop==1){
+        sql=' update topic set istop=0, topuid=null, toptime=null where tid="'+tid+'"';
+    }else{
+      //置顶
+        sql=' update topic set istop=1, topuid="'+tuid+'",toptime=now() where tid="'+tid+'"';
+    }
+
+    let data = {session:req.session};
+    const rows = await dbhelper.query(sql);
+
+    /* 如果没有正常更新回复，则返回错误*/
+    if(rows.affectedRows!=1) {
+        data.status = 0;
+    }else{
+        data.status = 1;
+    }
+
+    res.json(data);
+});
+
+/* 帖子加精 */
+router.post('/setselect',async (req, res) => {
+
+    let tid = req.body.tid;
+    let isselect = req.body.isselect;
+    let tuid = req.body.tuid;
+
+    let sql='';
+    //取消置顶
+    if(isselect==1){
+        sql=' update topic set isselect=0, selectuid=null, selecttime=null where tid="'+tid+'"';
+    }else{
+        //置顶
+        sql=' update topic set isselect=1, selectuid="'+tuid+'",selecttime=now() where tid="'+tid+'"';
+    }
+
+    let data = {session:req.session};
+    const rows = await dbhelper.query(sql);
+
+    /* 如果没有正常更新回复，则返回错误*/
+    if(rows.affectedRows!=1) {
+        data.status = 0;
+    }else{
+        data.status = 1;
+    }
+
+    res.json(data);
+});
 
 
 module.exports = router;
