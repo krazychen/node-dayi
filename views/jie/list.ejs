@@ -57,7 +57,9 @@
               </span>
             </div>
             <div class="fly-list-badge">
-                <!--<span class="layui-badge layui-bg-red">精帖</span>-->
+                <% if(item.isselect==1){ %>
+                <span class="layui-badge layui-bg-red">精帖</span>
+                <% } %>
             </div>
         </li>
         <% }) %>

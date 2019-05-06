@@ -13,6 +13,8 @@ const indexRouter = require('./routes/index');
 const serverUsersRouter = require('./server/users');
 /* 帖子服务后台服务器请求路由 */
 const serverTopicRouter = require('./server/topic');
+/* 回复相关服务后台服务器请求路由 */
+const serverAnswerRouter = require('./server/answer');
 
 
 const app = express();
@@ -41,6 +43,7 @@ app.use(session({
 app.use('/', indexRouter);
 app.use('/server/users',serverUsersRouter);
 app.use('/server/topics',serverTopicRouter);
+app.use('/server/answers',serverAnswerRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

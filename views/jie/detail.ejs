@@ -23,8 +23,11 @@
                     <!-- <span clas s="layui-badge">审核中</span> -->
                     <span class="layui-badge layui-bg-green fly-detail-column"><%= data.tclass %></span>
 
-                    <span class="layui-badge" style="background-color: #999;"><%= data.status %></span>
-                    <!-- <span class="layui-badge" style="background-color: #5FB878;">已结</span> -->
+                    <% if(data.status=='未结'){ %>
+                    <span class="layui-badge" style="background-color: #999;">未结</span>
+                    <% }else {%>
+                    <span class="layui-badge" style="background-color: #5FB878;">已结</span>
+                    <% } %>
 
                     <% if(data.istop==1){ %>
                     <span class="layui-badge layui-bg-black">置顶</span>
@@ -55,9 +58,9 @@
                         <% } //只有老师才能置顶和加精%>
                     </div>
                     <span class="fly-list-nums">
-            <a href="#comment"><i class="iconfont" title="回答">&#xe60c;</i> <%= data.replys %></a>
-            <i class="iconfont" title="人气">&#xe60b;</i> <%= data.visits %>
-          </span>
+                        <a href="#comment"><i class="iconfont" title="回答">&#xe60c;</i> <%= data.replys %></a>
+                        <i class="iconfont" title="人气">&#xe60b;</i> <%= data.visits %>
+                    </span>
                 </div>
                 <div class="detail-about">
                     <a class="fly-avatar" href="../user/home.html">
@@ -71,7 +74,7 @@
                     </a>
                     <div class="fly-detail-user">
                         <a href="../user/home.html" class="fly-link">
-                            <cite><%= session.username %></cite>
+                            <cite><%= data.username %></cite>
                             <% if(session && session.role_type=='老师'){ %>
                                 <i class="iconfont icon-renzheng layui-hide-xs" title="老师"></i>
                             <% } %>
@@ -90,7 +93,9 @@
                     </div>
                     <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
                         <span style="padding-right: 10px; color: #FF7200">悬赏：<%= data.texperience %>积分</span>
+                        <% if(data.uid==session.uid){ %>
                         <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="add.html">编辑此贴</a></span>
+                        <% } //只有创建者才能进行编辑%>
                     </div>
                 </div>
                 <div class="detail-body photos">
@@ -104,94 +109,82 @@
                 </fieldset>
 
                 <ul class="jieda" id="jieda">
-                    <li data-id="111" class="jieda-daan">
-                        <a name="item-1111111111"></a>
+                    <% if(answers) answers.forEach(function (item, index) { %>
+                    <li data-id="<%= item.aid %>" class="jieda-daan">
+                        <a name="item-<%= item.aid %>"></a>
                         <div class="detail-about detail-about-reply">
                             <a class="fly-avatar" href="">
-                                <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt=" ">
+                                <%
+                                    let pic = item.pic;
+                                    if(item.pic.indexOf("public") != -1){
+                                        pic=item.pic.substring(item.pic.indexOf("public") + "public".length, item.pic.length)
+                                    }
+                                %>
+                                <img src="<%= pic %>" alt="<%= item.username %>">
                             </a>
                             <div class="fly-detail-user">
                                 <a href="" class="fly-link">
-                                    <cite>贤心</cite>
-                                    <i class="iconfont icon-renzheng" title="认证信息：XXX"></i>
-                                    <i class="layui-badge fly-badge-vip">VIP3</i>
+                                    <cite><%= item.username %></cite>
+                                    <% if(item.role_type=='老师'){ %>
+                                        <i class="iconfont icon-renzheng layui-hide-xs" title="老师"></i>
+                                    <% } %>
                                 </a>
-
+                                <% if(index==0){ %>
                                 <span>(楼主)</span>
-                                <!--
-                                <span style="color:#5FB878">(管理员)</span>
-                                <span style="color:#FF9E3F">（社区之光）</span>
-                                <span style="color:#999">（该号已被封）</span>
-                                -->
+                                <% } %>
                             </div>
 
                             <div class="detail-hits">
-                                <span>2017-11-30</span>
+                                <%
+                                    function p(s) {
+                                        return s < 10 ? '0' + s: s;//时间补零
+                                    }
+                                    let date = new Date(item.atime);
+                                    let date_value1 = '未知'
+                                    if(date) {
+                                        date_value1=date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+                                    }
+                                %>
+                                <span><%= date_value1 %></span>
                             </div>
-
+                            <% if(item.isaccept==1){ %>
                             <i class="iconfont icon-caina" title="最佳答案"></i>
+                            <% } %>
                         </div>
                         <div class="detail-body jieda-body photos">
-                            <p>香菇那个蓝瘦，这是一条被采纳的回帖</p>
+                            <p><%- item.content.replace(/\\n/g, '<br>') %></p>
                         </div>
                         <div class="jieda-reply">
-              <span class="jieda-zan zanok" type="zan">
-                <i class="iconfont icon-zan"></i>
-                <em>66</em>
-              </span>
-                            <span type="reply">
-                <i class="iconfont icon-svgmoban53"></i>
-                回复
-              </span>
+                            <span class="jieda-zan zanok" type="zan">
+                                <i class="iconfont icon-zan" onclick="dianzan('<%=item.aid %>')"></i>
+                                <em><%= item.afavor %></em>
+                            </span>
+                            <span type="reply" onclick="clickReply('<%=item.aid %>','<%=item.username %>','<%-item.content.replace(/\\n/g, '<br>') %>')">
+                                <i class="iconfont icon-svgmoban53" ></i>
+                                回复
+                            </span>
                             <div class="jieda-admin">
-                                <span type="edit">编辑</span>
-                                <span type="del">删除</span>
-                                <!-- <span class="jieda-accept" type="accept">采纳</span> -->
+                                <% if(data.uid==session.uid || item.uid==session.uid){ %>
+                                    <span type="edit" onclick="edit('<%=item.aid %>','<%-item.content.replace(/\\n/g, '<br>') %>')">编辑</span>
+                                    <span type="del" onclick="delan('<%=item.aid %>','<%=data.tid%>')">删除</span>
+                                <% } %>
+                                <% if(data.uid==session.uid && data.status!='已结'){ %>
+                                <span class="jieda-accept" type="accept" onclick="acceptan('<%=item.aid %>','<%=data.tid%>')">采纳</span>
+                                <% } %>
                             </div>
                         </div>
                     </li>
 
-                    <li data-id="111">
-                        <a name="item-1111111111"></a>
-                        <div class="detail-about detail-about-reply">
-                            <a class="fly-avatar" href="">
-                                <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt=" ">
-                            </a>
-                            <div class="fly-detail-user">
-                                <a href="" class="fly-link">
-                                    <cite>贤心</cite>
-                                </a>
-                            </div>
-                            <div class="detail-hits">
-                                <span>2017-11-30</span>
-                            </div>
-                        </div>
-                        <div class="detail-body jieda-body photos">
-                            <p>蓝瘦那个香菇，这是一条没被采纳的回帖</p>
-                        </div>
-                        <div class="jieda-reply">
-              <span class="jieda-zan" type="zan">
-                <i class="iconfont icon-zan"></i>
-                <em>0</em>
-              </span>
-                            <span type="reply">
-                <i class="iconfont icon-svgmoban53"></i>
-                回复
-              </span>
-                            <div class="jieda-admin">
-                                <span type="edit">编辑</span>
-                                <span type="del">删除</span>
-                                <span class="jieda-accept" type="accept">采纳</span>
-                            </div>
-                        </div>
-                    </li>
 
+                    <% }) %>
+                    <% if(answers.length==0) { %>
                     <!-- 无数据时 -->
-                    <!-- <li class="fly-none">消灭零回复</li> -->
+                    <li class="fly-none">消灭零回复</li>
+                    <% } %>
                 </ul>
 
                 <div class="layui-form layui-form-pane">
-                    <form action="/jie/reply/" method="post">
+                    <form action="" method="post">
                         <div class="layui-form-item layui-form-text">
                             <a name="comment"></a>
                             <div class="layui-input-block">
@@ -199,8 +192,9 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <input type="hidden" name="jid" value="123">
-                            <button class="layui-btn" lay-filter="*" lay-submit>提交回复</button>
+                            <input type="hidden" id="rpaid" value="">
+                            <input type="hidden" id="raid" value="">
+                            <button class="layui-btn" id="replysub" lay-filter="*" lay-submit>提交回复</button>
                         </div>
                     </form>
                 </div>
@@ -221,27 +215,114 @@
 <script type="text/javascript" src="/javascripts/uploader.js"></script>
 <script type="text/javascript" src="/javascripts/simditor.js"></script>
 <script>
-    var content = new Simditor({
+    let contentEditor = new Simditor({
         textarea: $('#content'),
-        pasteImage: true
-    });
-    $("#submit").click(function () {
-        let content = $("#content").val();
-        let data = {
-            content: content
+        pasteImage: true,
+        upload : {
+            url : 'ImgUpload.action', //文件上传的接口地址
+            params: null, //键值对,指定文件上传接口的额外參数,上传的时候随文件一起提交
+            fileKey: 'fileDataFileName', //server端获取文件数据的參数名
+            connectionCount: 3,
+            leaveConfirm: '正在上传文件'
         }
-        $.post('/api/topic/<%= data.pid %>', data, function (res) {
-            // console.log(res);
-            if (res.status === 'success') {
-                console.log('发表成功');
-                location.reload();
+    });
+    $("#replysub").click(function () {
+        const loginin='<%= session.username %>';
+        if(!loginin){
+            layer.alert('请先登录!');
+            return false;
+        }
+        let content = $("#content").val();
+        //如果raid不为空，则为编辑状态，如果为空，则为新增状态
+        if($("#raid").val()){
+            let data = {
+                aid:$("#raid").val(),
+                content: content
             }
-            else
-                console.log('发表失败');
-        });
+            $.post('/server/answers/edit', data, function (res) {
+                // console.log(res);
+                if (res.status === 1) {
+                    layer.alert('回复成功');
+                    location.reload();
+                }
+                else
+                    layer.alert('回复失败');
+            });
+        }else{
+            let data = {
+                tid:'<%= data.tid %>',
+                content: content,
+                paid:$("#rpaid").val()
+            }
+            $.post('/server/answers/add', data, function (res) {
+                // console.log(res);
+                if (res.status === 1) {
+                    layer.alert('回复成功');
+                    location.reload();
+                }
+                else
+                    layer.alert('回复失败');
+            });
+        }
+
         return false;
     });
 
+    function clickReply(paid,username,content){
+        $("#rpaid").val(paid);
+        contentEditor.setValue("<-</br> @<cite>"+username+"</cite>:"+content+" -> </br>");
+    }
+
+    function dianzan(aid){
+        let data = {
+            aid:aid
+        }
+        $.post('/server/answers/dianzan', data, function (res) {
+            if (res.status === 1) {
+                // layer.alert('点赞成功');
+                location.reload();
+            }
+            else
+                layer.alert('点赞失败');
+        });
+        return false;
+    }
+
+    function delan(aid,tid){
+        let data = {
+            aid:aid,
+            tid:tid
+        }
+        $.post('/server/answers/del', data, function (res) {
+            if (res.status === 1) {
+                location.reload();
+            }
+            else
+                layer.alert('删除失败');
+        });
+        return false;
+    }
+
+    function edit(aid,content){
+        $("#raid").val(aid);
+
+        contentEditor.setValue(content);
+    }
+
+    function acceptan(aid,tid){
+        let data = {
+            aid:aid,
+            tid:tid
+        }
+        $.post('/server/answers/acceptan', data, function (res) {
+            if (res.status === 1) {
+                location.reload();
+            }
+            else
+                layer.alert('采纳失败');
+        });
+        return false;
+    }
 </script>
 </body>
 </html>

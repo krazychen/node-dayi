@@ -47,7 +47,7 @@ router.get('/topic/:topic_id',async (req, res) => {
     let sess=req.session;
     let tid = req.params.topic_id;
     let sql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid where tid = "' + tid + '"';
-    let answerSql = 'SELECT * FROM answer NATURAL JOIN user where pid = "' + tid + '"';
+    let answerSql = 'SELECT * FROM answer left JOIN user on answer.uid=user.uid where answer.tid = "' + tid + '"';
     let visitUpSql = 'update topic set visits=visits+1 where tid = "' + tid + '"';
     /* 回帖周榜sql - 获取的是用户*/
     let replyssql = 'SELECT * FROM topic left JOIN user on topic.uid=user.uid ORDER BY topic.replys desc,topic.lasttime DESC limit 10';
@@ -60,7 +60,7 @@ router.get('/topic/:topic_id',async (req, res) => {
     const replys = await dbhelper.query(replyssql);
 
     data.data = topics[0];
-    data.answer = answers;
+    data.answers = answers;
     data.replys = replys;
     data.tclass = '';
     data.tstatus = '';
@@ -72,36 +72,6 @@ router.get('/topic/:topic_id',async (req, res) => {
         data.status=0;
     }
     res.render("jie/detail",data);
-    // console.log(sql);
-    // connection_read.query(sql, function (err, val) {
-    //     if (err)
-    //         throw err;
-    //     console.log(val)
-    //     if (val && val.length > 0) {
-    //         data.data = val[0];
-    //         data.status = 'success';
-    //         connection_write.query(sql2, function (err, val) {
-    //             if (err)
-    //                 throw err;
-    //             connection_read.query(sql1, function (err, val) {
-    //                 if (err)
-    //                     throw err;
-    //                 if (val && val.length > 0) {
-    //                     data.reply = val;
-    //                     data.status = 'success';
-    //                 } else {
-    //                     data.status = 'failed';
-    //                 }
-    //                 console.log(data)
-    //                 res.render("jie/detail",data);
-    //             })
-    //         })
-    //     } else {
-    //         data.status = 'failed';
-    //         res.render("jie/detail",data);
-    //     }
-    //
-    // })
 });
 
 //获得置顶的帖子,只获取前5条
